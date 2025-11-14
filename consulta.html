@@ -19,34 +19,42 @@
 const params = new URLSearchParams(window.location.search);
 const cod = params.get("cod");
 
-// 2 - Link da sua planilha (modo CSV)
-const csvUrl = "https://groupcosampa-my.sharepoint.com/:x:/g/personal/caua_lima_cosampa_com_br/IQAMajOpoWGyQbale5JW4NZtAZwY7inckgLYvXkm_f1KvwI?e=D52fKr";
+// 2 - Link do CSV (usar RAW link do GitHub ou outro CSV público)
+const csvUrl = "https://raw.githubusercontent.com/caualima-dotcom/tttttt/refs/heads/main/saldo_de_estoque_CAUA.LIMA_2025-11-14_07-30-46%20(1)%20(1).csv";
 
 // 3 - Busca o CSV e procura o código
 fetch(csvUrl)
   .then(r => r.text())
   .then(text => {
-    let linhas = text.split(/\r?\n/).map(l => l.split(","));
-    
-    let header = linhas[0]; // cabeçalho
+    // Separa linhas e colunas (split por ;)
+    let linhas = text.split(/\r?\n/).map(l => l.split(";"));
+
+    // Remove espaços extras do cabeçalho
+    let header = linhas[0].map(h => h.trim());
+
     let colCod = header.indexOf("Cod. Material");
     let colMat = header.indexOf("Material");
     let colQtd = header.indexOf("Qtd. / Serial");
 
-    let item = linhas.find(l => l[colCod] == cod);
+    // Procura o item pelo código (pula a primeira linha do cabeçalho)
+    let item = linhas.slice(1).find(l => l[colCod] == cod);
 
     if (!item) {
       document.getElementById("resultado").innerHTML =
-        `<div class='linha'>Código <b>${cod}</b> não encontrado.</div>`;
+        `<div class='linha'>Codigo <b>${cod}</b> não encontrado.</div>`;
       return;
     }
 
     document.getElementById("resultado").innerHTML = `
       <div class='titulo'>Estoque</div>
-      <div class='linha'><b>Código:</b> ${item[colCod]}</div>
+      <div class='linha'><b>Codigo:</b> ${item[colCod]}</div>
       <div class='linha'><b>Material:</b> ${item[colMat]}</div>
       <div class='linha'><b>Quantidade:</b> ${item[colQtd]}</div>
     `;
+  })
+  .catch(err => {
+    document.getElementById("resultado").innerHTML =
+      `<div class='linha'>Erro ao carregar o CSV: ${err}</div>`;
   });
 </script>
 
