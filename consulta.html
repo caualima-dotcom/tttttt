@@ -3,58 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <title>Consulta de Estoque</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { font-family: Arial; padding: 20px; }
-  .card { border: 1px solid #ccc; padding: 20px; border-radius: 10px; max-width: 400px; }
-  .titulo { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
-  .linha { margin: 6px 0; font-size: 18px; }
+  /* Corpo da página */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px;
+  }
+
+  /* Card central responsivo */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    padding: 20px 15px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+  }
+
+  /* Logo */
+  .logo {
+    max-width: 120px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+
+  /* Título do card */
+  .titulo {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333;
+    letter-spacing: 0.5px;
+  }
+
+  /* Linhas de informação */
+  .linha {
+    font-size: 16px;
+    margin: 6px 0;
+    color: #555;
+    word-wrap: break-word;
+  }
+
+  .linha b {
+    color: #222;
+  }
+
+  /* Mensagem de carregando */
+  #resultado.carregando {
+    font-size: 18px;
+    color: #888;
+  }
+
+  /* Ajustes para telas pequenas */
+  @media (max-width: 360px) {
+    .titulo {
+      font-size: 20px;
+    }
+    .linha {
+      font-size: 15px;
+    }
+    .logo {
+      max-width: 100px;
+    }
+  }
 </style>
 </head>
 <body>
 
-<div class="card" id="resultado">Carregando...</div>
+<div class="card" id="resultado">
+  <img class="logo" src="https://www.cosampa.com.br/wp-content/uploads/2023/08/MODELO-LOGOS-COSAMPA.png" alt="Logo Cosampa">
+  Carregando...
+</div>
 
 <script>
-// 1 - Captura o código do QR (ex: ?cod=10057214)
+// Captura o código do QR (ex: ?cod=10057214)
 const params = new URLSearchParams(window.location.search);
 const cod = params.get("cod");
 
-// 2 - Link do CSV (usar RAW link do GitHub ou outro CSV público)
+// Link do CSV público
 const csvUrl = "https://raw.githubusercontent.com/caualima-dotcom/tttttt/refs/heads/main/saldo_de_estoque_CAUA.LIMA_2025-11-14_07-30-46%20(1)%20(1).csv";
 
-// 3 - Busca o CSV e procura o código
+// Busca o CSV e procura o código
 fetch(csvUrl)
   .then(r => r.text())
   .then(text => {
-    // Separa linhas e colunas (split por ;)
     let linhas = text.split(/\r?\n/).map(l => l.split(";"));
-
-    // Remove espaços extras do cabeçalho
     let header = linhas[0].map(h => h.trim());
 
     let colCod = header.indexOf("Cod. Material");
     let colMat = header.indexOf("Material");
     let colQtd = header.indexOf("Qtd. / Serial");
 
-    // Procura o item pelo código (pula a primeira linha do cabeçalho)
     let item = linhas.slice(1).find(l => l[colCod] == cod);
 
+    const resultado = document.getElementById("resultado");
+
     if (!item) {
-      document.getElementById("resultado").innerHTML =
-        `<div class='linha'>Codigo <b>${cod}</b> não encontrado.</div>`;
+      resultado.innerHTML = `
+        <img class="logo" src="https://www.cosampa.com.br/wp-content/uploads/2023/08/MODELO-LOGOS-COSAMPA.png" alt="Logo Cosampa">
+        <div class='linha'>Código <b>${cod}</b> não encontrado.</div>`;
       return;
     }
 
-    document.getElementById("resultado").innerHTML = `
+    resultado.innerHTML = `
+      <img class="logo" src="https://www.cosampa.com.br/wp-content/uploads/2023/08/MODELO-LOGOS-COSAMPA.png" alt="Logo Cosampa">
       <div class='titulo'>Estoque</div>
-      <div class='linha'><b>Codigo:</b> ${item[colCod]}</div>
+      <div class='linha'><b>Código:</b> ${item[colCod]}</div>
       <div class='linha'><b>Material:</b> ${item[colMat]}</div>
       <div class='linha'><b>Quantidade:</b> ${item[colQtd]}</div>
     `;
   })
   .catch(err => {
-    document.getElementById("resultado").innerHTML =
-      `<div class='linha'>Erro ao carregar o CSV: ${err}</div>`;
+    document.getElementById("resultado").innerHTML = `
+      <img class="logo" src="https://www.cosampa.com.br/wp-content/uploads/2023/08/MODELO-LOGOS-COSAMPA.png" alt="Logo Cosampa">
+      <div class='linha'>Erro ao carregar o CSV: ${err}</div>`;
   });
 </script>
 
