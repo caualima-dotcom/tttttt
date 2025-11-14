@@ -114,14 +114,14 @@ fetch(csvUrl)
     if (!item) {
       resultado.innerHTML = `
         <img class="logo" src="https://www.cosampa.com.br/wp-content/uploads/2023/08/MODELO-LOGOS-COSAMPA.png" alt="Logo Cosampa">
-        <div class='linha'>Código <b>${cod}</b> não encontrado.</div>`;
+        <div class='linha'>Codigo <b>${cod}</b> não encontrado.</div>`;
       return;
     }
 
     resultado.innerHTML = `
       <img class="logo" src="https://www.cosampa.com.br/wp-content/uploads/2023/08/MODELO-LOGOS-COSAMPA.png" alt="Logo Cosampa">
       <div class='titulo'>Estoque</div>
-      <div class='linha'><b>Código:</b> ${item[colCod]}</div>
+      <div class='linha'><b>Codigo:</b> ${item[colCod]}</div>
       <div class='linha'><b>Material:</b> ${item[colMat]}</div>
       <div class='linha'><b>Quantidade:</b> ${item[colQtd]}</div>
     `;
