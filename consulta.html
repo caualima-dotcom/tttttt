@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Consulta de Estoque</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  .card { border: 1px solid #ccc; padding: 20px; border-radius: 10px; max-width: 400px; }
+  .titulo { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
+  .linha { margin: 6px 0; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<div class="card" id="resultado">Carregando...</div>
+
+<script>
+// 1 - Captura o código do QR (ex: ?cod=10057214)
+const params = new URLSearchParams(window.location.search);
+const cod = params.get("cod");
+
+// 2 - Link da sua planilha (modo CSV)
+const csvUrl = "https://groupcosampa-my.sharepoint.com/:x:/g/personal/caua_lima_cosampa_com_br/IQAMajOpoWGyQbale5JW4NZtAZwY7inckgLYvXkm_f1KvwI?e=D52fKr";
+
+// 3 - Busca o CSV e procura o código
+fetch(csvUrl)
+  .then(r => r.text())
+  .then(text => {
+    let linhas = text.split(/\r?\n/).map(l => l.split(","));
+    
+    let header = linhas[0]; // cabeçalho
+    let colCod = header.indexOf("Cod. Material");
+    let colMat = header.indexOf("Material");
+    let colQtd = header.indexOf("Qtd. / Serial");
+
+    let item = linhas.find(l => l[colCod] == cod);
+
+    if (!item) {
+      document.getElementById("resultado").innerHTML =
+        `<div class='linha'>Código <b>${cod}</b> não encontrado.</div>`;
+      return;
+    }
+
+    document.getElementById("resultado").innerHTML = `
+      <div class='titulo'>Estoque</div>
+      <div class='linha'><b>Código:</b> ${item[colCod]}</div>
+      <div class='linha'><b>Material:</b> ${item[colMat]}</div>
+      <div class='linha'><b>Quantidade:</b> ${item[colQtd]}</div>
+    `;
+  });
+</script>
+
+</body>
+</html>
